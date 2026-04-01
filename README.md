@@ -4,9 +4,9 @@ Spring implementation of a retro games and controllers ecommerce, including role
 
 ## Instructions for usage
 
-1. Run schema.sql (includes all queries for creating, selecting and feeding an schema)
+1. Run `schema.sql` (includes all queries for creating, selecting and feeding an schema)
 2. Update `src/main/resources/application.properties` with your MySQL/mariadb credentials in your machine
-3. A default (modifiable) admin account is included (user: admin@valgames.com, password: SuperPassword64)
+3. A default (modifiable) admin account is included (user: admin@valgames.com, password: SuperPassword64), for a client account you can create one (^_~) it's easy
 4. If needed, implement MySQL dependencies on `pom.xml`, since implementation was done with mariadb in consideration
 
 ## Run
