@@ -1,3 +1,74 @@
+CREATE SCHEMA `ecommerce_portfolio` ;
+USE `ecommerce_portfolio`;
+
+CREATE TABLE customers (
+    customer_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_name VARCHAR(100) NOT NULL,
+    email VARCHAR(200) NOT NULL UNIQUE,
+    passwd VARCHAR(200) NOT NULL,
+	user_role ENUM('ADMIN', 'USER') NOT NULL
+);
+
+CREATE TABLE orders (
+    order_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT NOT NULL,
+    order_date DATE NOT NULL,
+    total_price DECIMAL(9,2) NOT NULL CHECK (total_price >= 0),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+);
+
+CREATE TABLE categories (
+    category_id INT AUTO_INCREMENT PRIMARY KEY,
+    category_name VARCHAR(100) NOT NULL UNIQUE,
+    category_description TEXT
+);
+
+CREATE TABLE products (
+    product_id INT AUTO_INCREMENT PRIMARY KEY,
+    category_id INT NOT NULL,
+    product_name VARCHAR(200) NOT NULL,
+    product_description TEXT,
+    unit_price DECIMAL(9,2) NOT NULL CHECK (unit_price > 0),
+    SKU INT NOT NULL UNIQUE,
+    FOREIGN KEY (category_id) REFERENCES categories(category_id)
+);
+
+CREATE TABLE order_details (
+    order_details_id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT NOT NULL CHECK (quantity > 0),
+    unit_price DECIMAL(9,2) NOT NULL CHECK (unit_price > 0),
+    address VARCHAR(300),
+    FOREIGN KEY (order_id) REFERENCES orders(order_id),
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
+);
+
+CREATE TABLE inventory (
+    inventory_id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL UNIQUE,
+    quantity INT NOT NULL DEFAULT 0 CHECK (quantity >= 0),
+    last_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
+);
+
+CREATE TABLE payment (
+    payment_id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL UNIQUE,
+    amount DECIMAL(9,2) NOT NULL CHECK (amount > 0),
+    method VARCHAR(20) NOT NULL CHECK (method IN ('debit','credit','paypal')),
+    payment_status VARCHAR(20) NOT NULL CHECK (payment_status IN ('pending', 'completed', 'failed', 'refunded')),
+    paid_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id)
+);
+
+CREATE INDEX idx_customer ON customers (customer_id);
+CREATE INDEX idx_order ON order_details (product_id, quantity);
+CREATE INDEX idx_product_info ON products (product_id, unit_price, product_name);
+CREATE INDEX idx_inventory_amount ON inventory (quantity, last_update);
+CREATE INDEX idx_category ON categories (category_id, category_name);
+
 INSERT INTO customers (customer_name, email, passwd, user_role)
 VALUES ('admin', 'admin@valgames.com', '$2a$10$VP3KSE7dH2e4ylZtSXr1e.C4AipPG7NfrbEWsihRyP/lp2bkpgvpO', 'admin');
 
@@ -36,49 +107,3 @@ INSERT INTO inventory (product_id, quantity, last_update) VALUES
 (11, 23, DEFAULT),
 (12, 35, DEFAULT),
 (13, 0, DEFAULT);
-
--- INSERT INTO orders (customer_id, order_date, total_price) VALUES
--- (1, '2025-01-10', 55000.00),
--- (2, '2025-01-15', 80000.00),
--- (3, '2025-02-01', 80000.00),
--- (4, '2025-02-14', 130000.00),
--- (5, '2025-03-05', 40000.00),
--- (1, '2025-03-10', 80000.00),
--- (6, '2025-03-20', 45000.00),
--- (2, '2025-04-01', 40000.00),
--- (7, '2025-04-10', 40000.00),
--- (1, '2025-04-18', 35000.00),
--- (3, '2025-04-20', 80000.00),
--- (8, '2025-04-22', 40000.00);
-
--- INSERT INTO order_details (order_id, product_id, quantity, unit_price) VALUES
--- (1, 6, 1, 40000.00),
--- (1, 1, 1, 15000.00),
--- (2, 5, 1, 40000.00),
--- (2, 8, 1, 40000.00),
--- (3, 7, 2, 40000.00),
--- (4, 11, 1, 40000.00),
--- (4, 7, 1, 40000.00),
--- (4, 4, 1, 35000.00),
--- (4, 2, 1, 15000.00),
--- (5, 9, 3, 40000.00),
--- (6, 6, 1, 40000.00),
--- (6, 2, 1, 15000.00),
--- (6, 1, 1, 15000.00), 
--- (7, 3, 1, 45000.00),
--- (8, 1, 1, 15000.00),
--- (9, 10, 1, 40000.00),
--- (10, 4, 10, 35000.00);
--- -- no product id n12 being sold (for testing payment)
-
--- INSERT INTO payment (order_id, amount, method, payment_status, paid_at) VALUES
--- (1, 55000.00, 'credit', 'completed', '2025-01-10 10:05:00'),
--- (2, 80000.00, 'debit', 'completed', '2025-01-15 11:05:00'),
--- (3, 80000.00, 'credit', 'completed', '2025-02-01 09:35:00'),
--- (4, 130000.00, 'credit', 'completed', '2026-02-14 14:05:00'),
--- (5, 120000.00, 'debit', 'completed', '2026-03-05 16:05:00'),
--- (6, 70000.00, 'credit', 'completed', '2026-03-10 10:05:00'),
--- (7, 45000.00, 'debit', 'completed', '2026-03-20 12:05:00'),
--- (8, 15000.00, 'credit', 'completed', '2026-03-01 08:05:00'),
--- (9, 40000.00, 'debit', 'refunded', '2026-03-10 15:05:00'),
--- (10, 350000.00, 'credit', 'pending', NULL)
