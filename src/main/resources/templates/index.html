@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Valgames</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link th:href="@{/css/styles.css}" rel="stylesheet"/>
+</head>
+<body>
+<div class="container-flex">
+    <nav class="navbar navbar-expand">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                <img th:src="@{/img/logo.png}" style="height: 30px;" alt="Valgames Logo"/>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav container align-items-center">
+                    <li class="nav-item dropdown text-center">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Products</a>
+                        <ul class="dropdown-menu">
+                            <li th:each="cat : ${categories}">
+                                <a class="dropdown-item" th:href="@{/catalog(categoryId=${cat.categoryId})}" th:text="${cat.categoryName}"></a>
+                            </li>
+                            <li><hr class="dropdown-divider"/></li>
+                            <li><a class="dropdown-item" th:href="@{/catalog}">All Products</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item ms-auto" sec:authorize="!isAuthenticated()">
+                        <a th:href="@{/login}" class="nav-link d-flex align-items-center bg-opacity-50 rounded-4 btn btn-outline-light">
+                            <div class="p-2">Login</div>
+                        </a>
+                    </li>
+                    <li class="nav-item" sec:authorize="!isAuthenticated()">
+                        <a th:href="@{/register}" class="nav-link d-flex align-items-center bg-opacity-50 rounded-4 btn btn-outline-light">
+                            <div class="p-2">Register</div>
+                        </a>
+                    </li>
+
+                    <li class="nav-item ms-auto" sec:authorize="isAuthenticated()">
+                        <a th:href="@{/catalog}" class="nav-link d-flex align-items-center bg-opacity-50 rounded-4 btn btn-outline-light">
+                            <div class="p-2" sec:authentication="name">User</div>
+                        </a>
+                    </li>
+                    <li class="nav-item cart-class" sec:authorize="isAuthenticated()">
+                        <div class="">
+                            <a class="nav-link d-flex align-items-center bg-opacity-50 rounded-4 btn btn-outline-light" id="cartLink" th:href="@{/cart}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-cart m-1" viewBox="0 0 16 16">
+                                    <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+                                </svg>
+                                <div class="p-2">Cart</div>
+                                <div class="m-1 p-1 bg-dark bg-opacity-75 rounded-2 px-2 text-white" id="cartIcon"
+                                     th:text="${cartCount != null ? cartCount : 0}">0</div>
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Carousel -->
+    <div class="container-flex bg-light-subtle">
+        <div id="carouselExampleCaptions" class="carousel slide">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            </div>
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <a th:href="@{/catalog(categoryId=1)}">
+                        <img th:src="@{/img/mk64.jpg}" class="d-block w-100" alt="N64 Games"/>
+                        <div class="carousel-caption">
+                            <h6>N64 Games</h6>
+                            <p class="h6 small">The biggest repertoire of N64 games from USA and Japan.</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="carousel-item">
+                    <a th:href="@{/catalog(categoryId=2)}">
+                        <img th:src="@{/img/n64-controllers.jpg}" class="d-block w-100" alt="N64 Controllers"/>
+                        <div class="carousel-caption">
+                            <h6>N64 Controllers</h6>
+                            <p class="h6 small">Tested and in good shape controllers by our members of Valgames.</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="carousel-item">
+                    <a th:href="@{/catalog(categoryId=3)}">
+                        <img th:src="@{/img/gba-games.jpg}" class="d-block w-100" alt="GBA Games"/>
+                        <div class="carousel-caption">
+                            <h6>GBA games</h6>
+                            <p class="h6 small">Clean labels and original motherboards in Valgames.</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+       <footer class="border-top mt-5">
+        <div class="container py-4">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <h6 class="text-uppercase fw-bold">Valgames</h6>
+                    <ul class="list-unstyled mb-0">
+                        <li th:each="cat : ${categories}">
+                            <a th:href="@{/catalog(categoryId=${cat.categoryId})}" th:text="${cat.categoryName}" class="text-decoration-none text-dark"></a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-6 mb-3 text-end">
+                    <h6 class="text-uppercase fw-bold">Contact</h6>
+                    <p class="mb-1">Email: info@valgames.com</p>
+                    <p class="mb-0">Phone: +56 9 12345678</p>
+                </div>
+            </div>
+            <hr/>
+            <div class="text-center small">© 2026 Valgames</div>
+        </div>
+    </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script th:src="@{/js/script.js}"></script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Valgames - Products</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link th:href="@{/css/styles.css}" rel="stylesheet"/>
+</head>
+<body>
+<div class="">
+    <div class="container">
+        <nav class="navbar navbar-expand">
+            <div class="container">
+                <a class="navbar-brand" th:href="@{/}">
+                    <img th:src="@{/img/logo.png}" style="height: 30px;"/>
+                </a>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav container align-items-center">
+                        <li class="nav-item dropdown text-center">
+                            <a class="nav-link dropdown-toggle" href="#" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">Products</a>
+                            <ul class="dropdown-menu">
+                                <li th:each="cat : ${categories}">
+                                    <a class="dropdown-item"
+                                       th:href="@{/catalog(categoryId=${cat.categoryId})}"
+                                       th:text="${cat.categoryName}"></a>
+                                </li>
+                                <li><hr class="dropdown-divider"/></li>
+                                <li><a class="dropdown-item" th:href="@{/catalog}">All Products</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item ms-auto">
+                            <a class="nav-link d-flex align-items-center rounded-4 btn btn-outline-light"
+                            th:href="@{/cart}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"
+                                     fill="currentColor" class="bi bi-cart m-1" viewBox="0 0 16 16">
+                                    <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+                                </svg>
+                                <div class="p-2">Cart</div>
+                                <div class="m-1 p-1 bg-dark bg-opacity-75 rounded-2 px-2 text-white" id="cartIcon"
+                                     th:text="${cartCount != null ? cartCount : 0}">0</div>
+                            </a>
+                        </li>
+                        <li class="nav-item ms-2">
+                            <form th:action="@{/logout}" method="post">
+                                <button type="submit" class="nav-link d-flex align-items-center  rounded-4 btn btn-outline-light">
+                                    <div class="p-2" sec:authentication="name">User</div>
+                                    <div class="m-1 p-1 bg-dark bg-opacity-75 rounded-2 px-2 text-white">Logout</div>
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container mt-4">
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+            <form th:action="@{/catalog}" method="get" class="d-flex justify-content-end mb-3">
+                <div class="input-group" style="max-width: 400px;">
+                    <input type="text" name="search" class="form-control"
+                           placeholder="Search products..." th:value="${search}"/>
+                    <button type="submit" class="btn btn-dark">Search</button>
+                    <a th:href="@{/catalog}" class="btn btn-dark">Clear</a>
+                </div>
+            </form>
+
+            <div class="d-flex gap-2 flex-wrap mb-4">
+                <a th:href="@{/catalog}"
+                   th:classappend="${selectedCategory == null and search == null} ? 'btn-dark' : 'btn-outline-dark'"
+                   class="btn btn-sm">All</a>
+                <a th:each="cat : ${categories}"
+                   th:href="@{/catalog(categoryId=${cat.categoryId})}"
+                   th:text="${cat.categoryName}"
+                   th:classappend="${selectedCategory == cat.categoryId} ? 'btn-dark' : 'btn-outline-dark'"
+                   class="btn btn-sm"></a>
+            </div>
+        </div>
+
+        <div class="container-fluid me-3 content-row">
+            <div id="all" class="row">
+                <div th:each="p : ${list}" class="col-sm-12 col-md-6 col-lg-4 col-xl-3 pt-3">
+                    <div class="card">
+                        <div class="img-card-product">
+                            <p class="bg-warning bg-opacity-10 rounded-2 position-absolute top-0 end-0 m-2"
+                               style="width: auto; padding: 8px 12px;" th:text="'$' + ${p.unitPrice}"></p>
+                            <img th:src="@{/img/{id}.png(id=${p.id})}" class="card-img-top"
+                                 onerror="this.src='/img/placeholder.png'"/>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${p.productName}"></h5>
+                            <p class="card-text description" th:text="${p.productDescription}"></p>
+
+                            <div>
+                                <div class="d-inline-flex align-items-center">
+                                    <button type="button" class="btn btn-outline-dark rounded-4 sub">-</button>
+                                    <h4 class="mx-3 pt-1 qtty">0</h4>
+                                    <button type="button" class="btn btn-outline-dark rounded-4 add">+</button>
+                                    <button type="button" class="btn btn-outline-dark rounded-4 mx-2 add-to-cart"
+                                            th:attr="data-product-id=${p.id}">
+                                        Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${#lists.isEmpty(list)}" class="col-12 mt-4">
+                    <p class="text-muted">No products found.</p>
+                </div>
+            </div>
+        </div>
+
+        <footer class="border-top mt-5">
+            <div class="container py-4">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <h6 class="text-uppercase fw-bold">Valgames</h6>
+                        <ul class="list-unstyled mb-0">
+                            <li th:each="cat : ${categories}">
+                                <a th:href="@{/catalog(categoryId=${cat.categoryId})}"
+                                   th:text="${cat.categoryName}"
+                                   class="text-decoration-none text-dark"></a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6 mb-3 text-end">
+                        <h6 class="text-uppercase fw-bold">Contact</h6>
+                        <p class="mb-1">Email: info@valgames.com</p>
+                        <p class="mb-0">Phone: +56 9 12345678</p>
+                    </div>
+                </div>
+                <hr/>
+                <div class="text-center small">© 2026 Valgames</div>
+            </div>
+        </footer>
+    </div>
+</div>
+
+<div id="cartToast" style="display:none; position:fixed; bottom:20px; right:20px; background:#198754; color:white; padding:12px 20px; border-radius:8px; z-index:9999;"></div>
+
+<script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"
+></script>
+<script th:src="@{/js/script.js}"></script>
+
+</body>
+</html>
