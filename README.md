@@ -38,7 +38,7 @@ or simply Run Main.java on your IDE of choice
 
 - If wanted to add a new product, check the id of the new product at the time of creation and add it to `src/main/resources/static/img/` named as `{product_id}.png` (proper file addition is WIP)
 - Trying to access admin paths being Authenticated clients will result in error instead of redirecting to catalog or landing page (WIP, haven't figured out)
-- LLMs usage kept to the minimum, primarily used for formatting, structure and SpringSecurity concerns (paths, sessions)
+- LLMs usage kept to the minimum, primarily used for formatting and giving structure to htmls, and certain SpringSecurity concerns (paths, sessions)
 - There's some vertical displacement in front-end for products when description is too short, due to time concerns this is WIP (carried from front-end module implemented here)
 - Proper Server side Cache/DB storage of Carts, for multiplatform/device Cart retention, since right now is held in *Session*
 
