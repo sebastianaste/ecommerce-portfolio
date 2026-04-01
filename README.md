@@ -20,10 +20,14 @@ or simply Run Main.java on your IDE of choice
 ## Predefined Paths 
 
  `/`  Public (landing page) 
+ 
  `/login`  Public 
+ 
  `/register`  Public 
+ 
  `/catalog`  Authenticated (client or admin) 
- `/admin/products/*`  admin only
+ 
+ `/admin/products/*`  Admin only
 
 
 ## Roles
